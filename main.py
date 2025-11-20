@@ -405,6 +405,66 @@ def state_heatmap():
 
 
 # ---------------------------------------------------------
+# FILTER OPTIONS (Dynamic Filters)
+# ---------------------------------------------------------
+
+@app.get("/filters/states")
+def get_states():
+    res = (
+        supabase
+        .from_("db_candidates")
+        .select("state")
+        .not_.is_("state", None)
+        .neq("state", "")
+        .execute()
+    )
+    states = sorted(list({row["state"] for row in res.data}))
+    return states
+
+
+@app.get("/filters/categories")
+def get_categories():
+    res = (
+        supabase
+        .from_("db_candidates")
+        .select("category")
+        .not_.is_("category", None)
+        .neq("category", "")
+        .execute()
+    )
+    cats = sorted(list({row["category"] for row in res.data}))
+    return cats
+
+
+@app.get("/filters/genders")
+def get_genders():
+    res = (
+        supabase
+        .from_("db_candidates")
+        .select("gender")
+        .not_.is_("gender", None)
+        .neq("gender", "")
+        .execute()
+    )
+    genders = sorted(list({row["gender"] for row in res.data}))
+    return genders
+
+
+@app.get("/filters/statuses")
+def get_statuses():
+    res = (
+        supabase
+        .from_("db_candidates")
+        .select("lead_status")
+        .not_.is_("lead_status", None)
+        .neq("lead_status", "")
+        .execute()
+    )
+    statuses = sorted(list({row["lead_status"] for row in res.data}))
+    return statuses
+
+
+# ---------------------------------------------------------
 # FOLLOWUP CALENDAR
 # ---------------------------------------------------------
 @app.get("/executive/followups")
