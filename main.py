@@ -412,10 +412,10 @@ def get_states():
     res = (
         supabase
         .from_("db_candidates")
-        .select("state")
-        .not_.is_("state", "null")
+        .select("state", count="exact")
         .neq("state", "")
-        .range(0, 300000)    # enough for 230K+ records
+        .not_.is_("state", None)
+        .range(0, 300000)   # Fetch 0 → 3 lakh rows
         .execute()
     )
 
