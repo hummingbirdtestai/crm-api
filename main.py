@@ -499,5 +499,19 @@ def followups(executive_id: str, date: str):
         .like("follow_up_at", f"{date}%")
         .execute()
     )
-
     return res.data or []
+
+
+@app.get("/")
+def home():
+    return {"status": "CRM API Running"}
+
+
+@app.get("/debug/check-db")
+def check_db():
+    try:
+        res = supabase.from_("db_candidates").select("id").limit(1).execute()
+        return {"db": "connected", "sample": res.data}
+    except Exception as e:
+        return {"db": "error", "message": str(e)}
+
