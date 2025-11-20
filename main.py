@@ -418,7 +418,7 @@ def get_states():
         .neq("state", "")
         .execute()
     )
-    states = sorted(list({row["state"] for row in res.data}))
+    states = sorted(list({row["state"] for row in (res.data or [])}))
     return states
 
 
@@ -432,7 +432,7 @@ def get_categories():
         .neq("category", "")
         .execute()
     )
-    cats = sorted(list({row["category"] for row in res.data}))
+    cats = sorted(list({row["category"] for row in (res.data or [])}))
     return cats
 
 
@@ -446,7 +446,7 @@ def get_genders():
         .neq("gender", "")
         .execute()
     )
-    genders = sorted(list({row["gender"] for row in res.data}))
+    genders = sorted(list({row["gender"] for row in (res.data or [])}))
     return genders
 
 
@@ -460,7 +460,7 @@ def get_statuses():
         .neq("lead_status", "")
         .execute()
     )
-    statuses = sorted(list({row["lead_status"] for row in res.data}))
+    statuses = sorted(list({row["lead_status"] for row in (res.data or [])}))
     return statuses
 
 
