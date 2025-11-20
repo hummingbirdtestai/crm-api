@@ -28,11 +28,11 @@ supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 # ---------------------------------------------------------
 class FilterPayload(BaseModel):
     executive_id: str
-    state: Optional[str] = None
-    category: Optional[str] = None
-    gender: Optional[str] = None
-    status: Optional[str] = None
-    bargain_type: Optional[str] = None
+    state: Optional[List[str]] = None
+    category: Optional[List[str]] = None
+    gender: Optional[List[str]] = None
+    status: Optional[List[str]] = None
+    bargain_type: Optional[List[str]] = None
     min_heat: Optional[int] = None
     max_heat: Optional[int] = 100
     prospect_percent: Optional[int] = None
@@ -161,7 +161,6 @@ def lead_list_get(
     res = query.execute()
     leads = res.data or []
 
-    # Sorting (fallback: by created_at)
     if sort == "newest":
         leads = sorted(leads, key=lambda x: x.get("created_at", ""), reverse=True)
 
@@ -428,7 +427,7 @@ def get_categories():
         supabase
         .from_("db_candidates")
         .select("category")
-        .not_.is_("category", None)
+        .neq("category", None)
         .neq("category", "")
         .execute()
     )
@@ -442,7 +441,7 @@ def get_genders():
         supabase
         .from_("db_candidates")
         .select("gender")
-        .not_.is_("gender", None)
+        .neq("gender", None)
         .neq("gender", "")
         .execute()
     )
@@ -456,12 +455,13 @@ def get_statuses():
         supabase
         .from_("db_candidates")
         .select("lead_status")
-        .not_.is_("lead_status", None)
+        .neq("lead_status", None)
         .neq("lead_status", "")
         .execute()
     )
     statuses = sorted(list({row["lead_status"] for row in (res.data or [])}))
     return statuses
+
 
 # ---------------------------------------------------------
 # MANAGER → LIST ALL EXECUTIVES
@@ -476,13 +476,12 @@ def list_executives():
         .execute()
     )
 
-    # Rename keys to match frontend: id, name, active_lead_count
     executives = []
     for row in (res.data or []):
         executives.append({
             "id": row["executive_id"],
             "name": row["name"],
-            "active_lead_count": row.get("assigned_today", 0)  # or a real count later
+            "active_lead_count": row.get("assigned_today", 0)
         })
 
     return {"executives": executives}
