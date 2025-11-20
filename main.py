@@ -515,3 +515,17 @@ def check_db():
     except Exception as e:
         return {"db": "error", "message": str(e)}
 
+
+@app.get("/debug/env")
+def debug_env():
+    return {
+        "url": SUPABASE_URL,
+        "key_prefix": SUPABASE_SERVICE_KEY[:20]
+    }
+
+
+@app.get("/debug/count")
+def debug_count():
+    r = supabase.from_("db_candidates").select("id", count="exact").execute()
+    return r
+
