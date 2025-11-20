@@ -532,6 +532,12 @@ def debug_env():
 
 @app.get("/debug/count")
 def debug_count():
-    r = supabase.from_("db_candidates").select("id").execute()
+    r = (
+        supabase
+        .from_("db_candidates")
+        .select("id", count="exact")     # <--- THIS is the correct way
+        .limit(1)                        # <--- needed or else only 1000 returned
+        .execute()
+    )
     return {"count": len(r.data or [])}
 
