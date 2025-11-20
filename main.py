@@ -81,7 +81,14 @@ class BulkAssignPayload(BaseModel):
 # ---------------------------------------------------------
 @app.get("/auth/profile")
 def get_profile(phone: str):
-    res = supabase.from("db_executives").select("*").eq("mobile", phone).maybe_single().execute()
+    res = (
+        supabase
+        .from_("db_executives")
+        .select("*")
+        .eq("mobile", phone)
+        .maybe_single()
+        .execute()
+    )
     return res.data or {}
 
 
