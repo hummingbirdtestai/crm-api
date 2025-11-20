@@ -410,22 +410,19 @@ def state_heatmap():
 @app.get("/filters/states")
 def get_states():
 
-    # MUST explicitly expand the limit because Supabase-py returns only 100 by default
+    # MUST use range() in Python client, NOT limit()
     res = (
         supabase
         .from_("db_candidates")
         .select("state")
         .neq("state", "")
         .neq("state", None)
-        .limit(300000)   # <-- FIX
+        .range(0, 300000)     # <-- REAL FIX
         .execute()
     )
 
     rows = res.data or []
-
-    # Extract distinct states
-    states = sorted({ row["state"] for row in rows })
-
+    states = sorted({row["state"] for row in rows})
     return states
 
 
