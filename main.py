@@ -409,17 +409,23 @@ def state_heatmap():
 
 @app.get("/filters/states")
 def get_states():
+
+    # 1. Fetch ALL rows explicitly
     res = (
         supabase
         .from_("db_candidates")
-        .select("state", count="exact")
+        .select("state")
         .neq("state", "")
-        .not_.is_("state", None)
-        .range(0, 300000)   # Fetch 0 → 3 lakh rows
+        .neq("state", None)
+        .limit(300000)    # upper bound
         .execute()
     )
 
-    states = sorted(list({row["state"] for row in (res.data or [])}))
+    rows = res.data or []
+
+    # 2. Extract unique values in Python
+    states = sorted({ row["state"] for row in rows })
+
     return states
 
 
