@@ -463,6 +463,29 @@ def get_statuses():
     statuses = sorted(list({row["lead_status"] for row in (res.data or [])}))
     return statuses
 
+# ---------------------------------------------------------
+# MANAGER → LIST ALL EXECUTIVES
+# ---------------------------------------------------------
+@app.get("/manager/executives")
+def list_executives():
+    res = (
+        supabase
+        .from_("db_executives")
+        .select("executive_id, name, assigned_today, quota, status")
+        .order("name", desc=False)
+        .execute()
+    )
+
+    # Rename keys to match frontend: id, name, active_lead_count
+    executives = []
+    for row in (res.data or []):
+        executives.append({
+            "id": row["executive_id"],
+            "name": row["name"],
+            "active_lead_count": row.get("assigned_today", 0)  # or a real count later
+        })
+
+    return {"executives": executives}
 
 # ---------------------------------------------------------
 # FOLLOWUP CALENDAR
