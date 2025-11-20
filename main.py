@@ -410,14 +410,15 @@ def state_heatmap():
 @app.get("/filters/states")
 def get_states():
 
-    # MUST use range() in Python client, NOT limit()
+    # Python supabase client DOES NOT support .range()
+    # Use limit=50000 directly
     res = (
-        supabase
+        supabase.postgrest
         .from_("db_candidates")
         .select("state")
         .neq("state", "")
         .neq("state", None)
-        .range(0, 300000)     # <-- REAL FIX
+        .limit(50000)   # <-- WORKS
         .execute()
     )
 
