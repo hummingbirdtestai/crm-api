@@ -414,7 +414,7 @@ def get_states():
         supabase
         .from_("db_candidates")
         .select("state")
-        .not_.is_("state", None)
+        .neq("state", None)
         .neq("state", "")
         .execute()
     )
