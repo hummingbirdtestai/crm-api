@@ -297,11 +297,10 @@ def call_action_v5(payload: CallActionV5Payload):
 
     res = supabase.rpc("update_candidate_call_action_v5", rpc_params).execute()
 
-    # python supabase client has NO res.error
-    if res.status_code and res.status_code >= 400:
-        raise HTTPException(status_code=400, detail=res.data)
+    # ✔ Correct error handling for supabase-py
+    if res.error is not None:
+        raise HTTPException(status_code=400, detail=res.error)
 
-    # RPC returns {"status": "success"}
     return res.data or {"status": "success"}
 
 
