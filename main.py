@@ -69,6 +69,14 @@ class OfferSendPayload(BaseModel):
     executive_id: str
     offer_id: str
 
+class CallActionV5Payload(BaseModel):
+    candidate_id: int
+    executive_id: str
+    action: str
+    notes: Optional[str] = None
+    duration_sec: Optional[int] = None
+    bargain_amount: Optional[int] = None
+    followup_at: Optional[str] = None   # ISO timestamp
 
 class BulkAssignPayload(BaseModel):
     assign_from: str
@@ -271,6 +279,26 @@ def log_call(payload: CallLogPayload):
         "p_type": payload.type,
         "p_details": payload.details
     }).execute()
+
+    return {"status": "success"}
+
+@app.post("/lead/call-action-v5")
+def call_action_v5(payload: CallActionV5Payload):
+
+    rpc_params = {
+        "p_candidate_id": payload.candidate_id,
+        "p_executive_id": payload.executive_id,
+        "p_action": payload.action,
+        "p_notes": payload.notes,
+        "p_duration_sec": payload.duration_sec,
+        "p_bargain_amount": payload.bargain_amount,
+        "p_followup_at": payload.followup_at
+    }
+
+    res = supabase.rpc("update_candidate_call_action_v5", rpc_params).execute()
+
+    if res.error:
+        raise HTTPException(status_code=400, detail=res.error.get("message"))
 
     return {"status": "success"}
 
